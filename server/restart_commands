@@ -1,0 +1,3 @@
+cd d:\decision_app\server; npx ts-node server.ts
+cd d:\decision_app\server; node server.js 2>&1
+cd d:\decision_app; npm run dev

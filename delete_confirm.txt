@@ -1,0 +1,9 @@
+Τα αρχεία JS που δεν χρησιμοποιούνται από τον TS κώδικα:
+- src/decision-engine/engine.js
+- src/decision-engine/types.js
+- src/App.js
+- src/app/AppLayout.js
+- src/pages/Home.js
+- src/main.js
+
+Μπορούν να διαγραφούν με ασφάλεια.
