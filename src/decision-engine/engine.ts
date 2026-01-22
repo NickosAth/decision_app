@@ -89,16 +89,32 @@ export function runDecision(input: DecisionInput, lang: "en" | "el" = "en"): Dec
   };
 }
 
+// Auto-detect language from text
+export function detectLanguage(text: string): "en" | "el" {
+  // Greek Unicode ranges: 0x0370–0x03FF
+  const greekPattern = /[\u0370-\u03FF]/g;
+  const englishPattern = /[a-zA-Z]/g;
+  
+  const greekMatches = (text.match(greekPattern) || []).length;
+  const englishMatches = (text.match(englishPattern) || []).length;
+  
+  // If more Greek characters, use Greek
+  return greekMatches > englishMatches ? "el" : "en";
+}
+
 // AI engine (calls backend)
 export async function runDecisionAI(
   input: DecisionInput,
-  lang: "en" | "el"
+  uiLang: "en" | "el"
 ): Promise<DecisionResult> {
   try {
+    // Auto-detect language from user's question text
+    const aiLang = detectLanguage(input.text);
+    
     const res = await fetch("http://localhost:5000/api/decision", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...input, lang })
+      body: JSON.stringify({ ...input, lang: aiLang })
     });
 
     if (!res.ok) throw new Error("AI backend failed");
@@ -106,6 +122,6 @@ export async function runDecisionAI(
     return result;
   } catch (err) {
     console.error("AI failed, using local fallback", err);
-    return runDecision(input, lang);
+    return runDecision(input, uiLang);
   }
 }

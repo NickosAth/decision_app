@@ -17,49 +17,50 @@ app.post("/api/decision", async (req, res) => {
   const { text, category, risk, lang } = req.body;
   console.log("Received request:", { text, category, risk, lang });
 
-  const prompt = lang === "el" ? `
-Είσαι ένας έμπειρος σύμβουλος αποφάσεων. Ανάλυσε την ακόλουθη κατάσταση και προτείνε μια σοφή απόφαση.
+  const prompt = lang === "el" ? `Είσαι ένας έμπειρος ψυχολόγος και σύμβουλος αποφάσεων με χρόνια εμπειρία. Ανάλυσε ΠΡΟΣΕΚΤΙΚΆ την ακόλουθη κατάσταση και προτείνε μια πρακτική, ρεαλιστική απόφαση.
 
-ΣΗΜΑΝΤΙΚΟ: 
-- Αν η ερώτηση περιλαμβάνει αρνητικές συνέπειες (π.χ. "να σπάσω το πόδι μου"), κατάλαβε ότι ο χρήστης ΔΕΔΝ θέλει αυτό - είναι ένας κίνδυνος που θέλει να αποφύγει
-- Σκέψου τα πλεονεκτήματα vs μειονεκτήματα της κάθε επιλογής
-- Λάβε υπόψιν το επίπεδο κινδύνου
+ΚΑΝΟΝΕΣ:
+1. Αν η ερώτηση περιλαμβάνει αρνητικές συνέπειες (π.χ. "θα σπάσω το πόδι μου"), κατάλαβε ότι ο χρήστης ΔΕΔΝ θέλει αυτό - είναι κίνδυνος να αποφύγει
+2. ΑΝΑΛΥΣΕ διεξοδικά: πλεονεκτήματα, μειονεκτήματα, κόστη, οφέλη
+3. Λάβε υπόψιν το επίπεδο κινδύνου: ${risk}
+4. Δώσε ΜΙΑ ΣΥΓΚΕΚΡΙΜΕΝΗ απάντηση, όχι γενικές φράσεις
+5. Χρησιμοποίησε ΜΟΝΟ ελληνικά
 
-Κατάσταση: "${text}"
-Κατηγορία: "${category}", Επίπεδο κινδύνου: "${risk}".
+ΠΕΡΙΠΤΩΣΗ: "${text}"
+ΚΑΤΗΓΟΡΙΑ: ${category}, ΚΙΝΔΥΝΟΣ: ${risk}
 
-Επίστρεψε ΜΟΝΟ ένα JSON με τα εξής πεδία (χωρίς επιπλέον κείμενο):
+ΑΠΑΝΤΗΣΕ ΜΟΝΟ με ένα έγκυρο JSON (χωρίς επιπλέον κείμενο, χωρίς markdown, χωρίς επεξηγήσεις):
 {
-  "recommendation": "Απόφαση σε ελληνικά (σύντομη, σαφής)",
-  "explanation": "Ανάλυση της απόφασης σε ελληνικά (2-3 γραμμές, εξήγησε γιατί είναι καλή ή κακή)",
-  "score": αριθμός από 0 έως 100,
-  "confidence": "χαμηλή|μέτρια|υψηλή"
-}
-` : `
-You are an experienced decision advisor. Analyze the following situation and recommend a wise decision.
+  "recommendation": "Μία συγκεκριμένη πρακτική σύσταση (1 πρόταση, ξεκάθαρη και δράσιμη)",
+  "explanation": "Σύντομη ανάλυση: γιατί αυτή είναι η καλύτερη επιλογή δεδομένων των περιστάσεων",
+  "score": 75,
+  "confidence": "υψηλή"
+}` : `You are an experienced psychologist and decision advisor with years of expertise. Analyze CAREFULLY the following situation and recommend a practical, realistic decision.
 
-IMPORTANT:
-- If the question includes negative consequences (e.g., "and break my leg"), understand that the user does NOT want that - it's a risk they want to avoid
-- Consider pros vs cons of each option
-- Account for the risk level
+RULES:
+1. If the question includes negative consequences (e.g., "break my leg"), understand the user does NOT want that - it's a risk to avoid
+2. ANALYZE thoroughly: pros, cons, costs, benefits
+3. Account for risk level: ${risk}
+4. Give ONE SPECIFIC answer, not generic phrases
+5. Use ONLY English
 
-Situation: "${text}"
-Category: "${category}", Risk level: "${risk}".
+CASE: "${text}"
+CATEGORY: ${category}, RISK: ${risk}
 
-Return ONLY a JSON with these fields (no extra text):
+RESPOND ONLY with valid JSON (no extra text, no markdown, no explanations):
 {
-  "recommendation": "A clear decision recommendation",
-  "explanation": "Analysis of the decision (2-3 lines, explain why it's good or bad)",
-  "score": number from 0 to 100,
-  "confidence": "low|medium|high"
-}
-`;
+  "recommendation": "One specific practical suggestion (1 sentence, clear and actionable)",
+  "explanation": "Brief analysis: why this is the best choice given the circumstances",
+  "score": 75,
+  "confidence": "high"
+}`;
 
   try {
     const response = await client.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [{ role: "user", content: prompt }],
-      temperature: 0.7
+      temperature: 0.3,
+      max_tokens: 500
     });
 
     const rawContent = response.choices?.[0]?.message?.content || "";
