@@ -24,7 +24,8 @@ app.post("/api/decision", async (req, res) => {
 2. ΑΝΑΛΥΣΕ διεξοδικά: πλεονεκτήματα, μειονεκτήματα, κόστη, οφέλη
 3. Λάβε υπόψιν το επίπεδο κινδύνου: ${risk}
 4. Δώσε ΜΙΑ ΣΥΓΚΕΚΡΙΜΕΝΗ απάντηση, όχι γενικές φράσεις
-5. Χρησιμοποίησε ΜΟΝΟ ελληνικά
+5. Score: 0-100 όπου 0=κακή ιδέα, 100=εξαιρετική ιδέα (για την ΣΥΝΙΣΤΩΜΕΝΗ απόφαση)
+6. Χρησιμοποίησε ΜΟΝΟ ελληνικά
 
 ΠΕΡΙΠΤΩΣΗ: "${text}"
 ΚΑΤΗΓΟΡΙΑ: ${category}, ΚΙΝΔΥΝΟΣ: ${risk}
@@ -33,7 +34,7 @@ app.post("/api/decision", async (req, res) => {
 {
   "recommendation": "Μία συγκεκριμένη πρακτική σύσταση (1 πρόταση, ξεκάθαρη και δράσιμη)",
   "explanation": "Σύντομη ανάλυση: γιατί αυτή είναι η καλύτερη επιλογή δεδομένων των περιστάσεων",
-  "score": 75,
+  "score": 85,
   "confidence": "υψηλή"
 }` : `You are an experienced psychologist and decision advisor with years of expertise. Analyze CAREFULLY the following situation and recommend a practical, realistic decision.
 
@@ -42,7 +43,8 @@ RULES:
 2. ANALYZE thoroughly: pros, cons, costs, benefits
 3. Account for risk level: ${risk}
 4. Give ONE SPECIFIC answer, not generic phrases
-5. Use ONLY English
+5. Score: 0-100 where 0=bad idea, 100=excellent idea (for the RECOMMENDED decision, not the negative alternative)
+6. Use ONLY English
 
 CASE: "${text}"
 CATEGORY: ${category}, RISK: ${risk}
